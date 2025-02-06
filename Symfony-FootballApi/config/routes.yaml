@@ -1,0 +1,35 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+football_controllers:
+    resource:
+        path: ../src/Components/Football/Communication/Controller
+        namespace: App\Components\Football\Communication\Controller
+    type: attribute
+login_controller:
+    resource:
+        path: ../src/Components/UserLogin/Communication/Controller
+        namespace: App\Components\UserLogin\Communication\Controller
+    type: attribute
+register_controller:
+    resource:
+        path: ../src/Components/UserRegister/Communication/Controller
+        namespace: App\Components\UserRegister\Communication\Controller
+    type: attribute
+favorite_controller:
+    resource:
+        path: ../src/Components/UserFavorite/Communication/Controller
+        namespace: App\Components\UserFavorite\Communication\Controller
+    type: attribute
+shop_controllers:
+    resource:
+        path: ../src/Components/Shop/Communication/Controller
+        namespace: App\Components\Shop\Communication\Controller
+    type: attribute
+password_reset_controllers:
+    resource:
+        path: ../src/Components/ResetPassword/Communication/Controller
+        namespace: App\Components\ResetPassword\Communication\Controller
+    type: attribute

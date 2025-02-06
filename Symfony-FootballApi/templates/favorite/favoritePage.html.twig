@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Favorite clubs</h1>
+    <ul>
+        {% for favorite in favorites %}
+            <li style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    {{ favorite.teamName }}
+                </div>
+                <img width="80" src="{{ favorite.crest }}" style="margin-bottom: 10px;">
+                <div style="display: flex; justify-content: center; gap: 10px;">
+                    <form method="post" action="{{ path('favorite-page_delete', {'teamId': favorite.teamID}) }}" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ favorite.teamID) }}">
+                        <button type="submit" class="form-button">delete</button>
+                    </form>
+                    {% if loop.length >= 2 %}
+                        {% if not loop.first %}
+                            <form method="post" action="{{ path('favorite-page_move_up', {'teamId': favorite.teamID}) }}" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('move_up' ~ favorite.teamID) }}">
+                                <button type="submit" class="base-button">up</button>
+                            </form>
+                        {% endif %}
+                        {% if not loop.last %}
+                            <form method="post" action="{{ path('favorite-page_move_down', {'teamId': favorite.teamID}) }}" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('move_down' ~ favorite.teamID) }}">
+                                <button type="submit" class="base-button">down</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

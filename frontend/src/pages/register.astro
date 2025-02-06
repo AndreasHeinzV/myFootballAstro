@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Registration Page</title>
+</head>
+
+<body>
+<h2>Register</h2>
+<div id="error-message" class="error"></div>
+
+<form id="registration-form" action="/api/register" method="POST">
+    <label for="email">Email:</label>
+    <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+    />
+
+    <label for="firstName">FirstName:</label>
+    <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            placeholder="Enter your firstName"
+            required
+    />
+    <label for="lastName">LastName:</label>
+    <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            placeholder="Enter your last name"
+            required
+    />
+
+    <label for="password">Password:</label>
+    <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+    />
+
+    <label for="confirmPassword">Confirm Password:</label>
+    <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="Re-enter your password"
+            required
+    />
+
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    const errorMessageElement = document.getElementById('error-message')!;
+
+    document.querySelector('form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        errorMessageElement.innerHTML = '';
+        const formElement = e.target as HTMLFormElement;
+
+        const response = await fetch(
+            formElement.action,
+            {
+                method: formElement.method,
+                body: new FormData(formElement)
+            }
+        );
+        const textResponse = await response.text();
+        console.log("Raw response text:", textResponse);
+        try {
+            // Try to parse the response as JSON if it's valid JSON
+            const data = JSON.parse(textResponse);
+
+            // Handle successful response
+            if (response.ok) {
+                if (data.status === 'success') {
+                    errorMessageElement.innerHTML = data.message;
+                }
+            } else {
+                // Handle error response
+                errorMessageElement.innerText = data.message || `Error: ${response.status}`;
+                errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        } catch (e) {
+            // If JSON parsing fails, display the raw text response as a fallback
+            console.error("Error parsing JSON:", e);
+            errorMessageElement.innerText = `Unexpected response format: ${textResponse}`;
+            errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+
+            /*
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            errorMessageElement.innerHTML = data.message;
+        } else {
+            console.log(data.message);
+            errorMessageElement.innerText = response.status && data.message;
+            errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+        */
+        }
+    });
+</script>
+</body>
+</html>

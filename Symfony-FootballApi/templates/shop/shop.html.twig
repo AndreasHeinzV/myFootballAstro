@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="text-2xl font-bold text-center mb-6">Shop Page {{ teamName }}</h1>
+
+    {% if products is not empty %}
+        <h2 class="text-xl font-semibold text-center mb-4">Products for {{ teamName }}</h2>
+
+        <div class="flex flex-wrap gap-4 justify-center">
+            {% for product in products %}
+                <div class="flex flex-col items-center max-w-sm w-full rounded-lg">
+                    <a class="bg-red-900 flex flex-col items-center justify-between h-full text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                       href="{{ url('product_details',{'category': product.category, 'name': product.name, 'teamName': product.teamName, 'teamId': teamId}) }}">
+                        <img class="w-64 h-64 object-cover" style="filter: invert()" src="{{ product.imageLink }}"
+                             alt="{{ product.name }}">
+                        <span class="text-white mt-2">{{ product.name }}</span>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <h1 class="text-center text-xl font-semibold mt-6">No products found for this team.</h1>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    {% if players is not empty %}
+        <h1>Team: {{ players.teamName }}
+
+
+
+            {% if status %}
+                {% if favoriteStatus %}
+                    <a href="{{ url('team_details_delete',{'teamId':players.teamID, 'teamName':players.teamName}) }}"
+                       class="base-button"
+                       type="submit">delete</a>
+                {% else %}
+                    <a href="{{ url('team_details_add', {'teamId':players.teamID, 'teamName':players.teamName}) }}"
+                       class="base-button"
+                       type="submit">add</a>
+                {% endif %}
+            {% endif %}
+        </h1>
+
+        <ul>
+
+            {% for player in players.squad %}
+
+
+                <li>
+                    <a href="{{ path('player_details', {'teamName': players.teamName, 'playerName': player.name}) }}{{ player.link }}">{{ player.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="/?page=shop&teamId={{ players.teamID }}&teamName={{ players.teamName | url_encode }}"
+           class="button">View
+            Products</a>
+        <a href="{{ path('club_shop', {'teamName': players.teamName, 'teamId': players.teamID}) }}">NEW SHOP</a>
+
+    {% else %}
+
+        <h1> Page not found return to homepage</h1>
+        <a href="/">Index</a>
+    {% endif %}
+{% endblock %}

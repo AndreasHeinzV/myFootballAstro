@@ -1,0 +1,16 @@
+
+services:
+###> doctrine/doctrine-bundle ###
+  database:
+    ports:
+      - "5432"
+###< doctrine/doctrine-bundle ###
+
+###> symfony/mailer ###
+  mailcatcher:
+    image: 'schickling/mailcatcher'
+    container_name: cms_mailcatcher
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+###< symfony/mailer ###

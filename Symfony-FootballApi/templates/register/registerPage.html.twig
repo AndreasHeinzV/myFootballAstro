@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+        <h1 class="text-2xl text-center mb-8">Register</h1>
+
+        <main class="mx-auto w-fit">
+            {{ form_start(registration_form) }}
+            <table>
+                <tr>
+                    <td>{{ form_label(registration_form.firstName) }}</td>
+                    <td>{{ form_widget(registration_form.firstName) }}</td>
+                    <td>{{ form_errors(registration_form.firstName) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form_label(registration_form.lastName) }}</td>
+                    <td>{{ form_widget(registration_form.lastName) }}</td>
+                    <td>{{ form_errors(registration_form.lastName) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form_label(registration_form.email) }}</td>
+                    <td>{{ form_widget(registration_form.email) }}</td>
+                    <td>{{ form_errors(registration_form.email) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form_label(registration_form.password.first) }}</td>
+                    <td>{{ form_widget(registration_form.password.first) }}</td>
+                    <td>{{ form_errors(registration_form.password.first) }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form_label(registration_form.password.second) }}</td>
+                    <td>{{ form_widget(registration_form.password.second) }}</td>
+                    <td>{{ form_errors(registration_form.password.second) }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>{{ form_widget(registration_form.submit) }}</td>
+                </tr>
+            </table>
+            {{ form_end(registration_form) }}
+        </main>
+{% endblock %}
