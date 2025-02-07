@@ -9,7 +9,7 @@ const { status, players, message } = await response.json(); // Assume 'players' 
 
 // Define Player type
 type Player = {
-    playerID: number;
+    playerId: number;
     link: string;
     name: string;
 };
@@ -29,7 +29,7 @@ type Player = {
         <ul>
             {players.map((player: Player) => (
                     <li>
-                        <a href={`/playerDetails?teamName=${teamName}&playerId=${player.playerID}&playerName=${player.name}${player.link}`}>
+                        <a href={`/football/playerDetails?teamName=${teamName}&playerId=${player.playerId}&playerName=${player.name}`}>
                             {player.name}
                         </a>
                     </li>

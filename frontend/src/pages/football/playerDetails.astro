@@ -1,0 +1,41 @@
+---
+const url = new URL(Astro.request.url);
+const playerId = url.searchParams.get('playerId') ?? 0;
+const teamName = url.searchParams.get('teamName') ?? 'Unknown Team';
+const playerName = url.searchParams.get('playerName') ?? 'Unknown Player';
+
+const response = await fetch(`http://localhost:4321/api/playerDetails?playerId=${playerId}&playerName=${playerName}`);
+const {status, data, message} = await response.json();
+
+
+type Player = {
+    position: number,
+    dateOfBirth: number,
+    nationality: number,
+    shirtNumber: number,
+}
+---
+
+<html>
+
+<head>
+    <title>Players Info</title>
+</head>
+<body>
+
+
+<h1> Player Info For {playerName}</h1>
+
+{status === "error" || !data ? (
+        <p>{message || "No player available"}</p>
+) : (
+        <ul>
+            <li>{data.position}</li>
+            <li>{data.dateOfBirth}</li>
+            <li>{data.nationality}</li>
+            <li>{data.shirtNumber}</li>
+        </ul>
+)}
+
+</body>
+</html>
