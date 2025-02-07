@@ -8,6 +8,7 @@ use App\Components\UserFavorite\Business\UserFavoriteBusinessFacadeInterface;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -24,21 +25,38 @@ class TeamDetailsController extends AbstractController
     }
 
     #[Route('', name: 'team_details')]
-    public function index(string $teamId): Response
+    public function index(string $teamId): JsonResponse
     {
+        /*
         $user = $this->security->getUser();
         $userEntity = ($user instanceof UserInterface) ? $this->userBusinessFacade->getUserEntity($user) : null;
         $status = null !== $userEntity;
 
         $favoriteStatus = $status ? $this->userFavoriteBusinessFacade->getFavoriteStatus($user, $teamId) : null;
+*/
+        $players = $this->footballBusinessFacade->getTeam($teamId);
 
-        return $this->render('football/team_details.html.twig', [
-            'players' => $this->footballBusinessFacade->getTeam($teamId),
-            'status' => $status,
-            'favoriteStatus' => $favoriteStatus,
-        ]);
+        if (empty($players)) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'No player found',
+            ], Response::HTTP_NO_CONTENT);
+        }
+                $playersNew= $players['squad'];
+
+        $playersArray = array_map(fn ($playersNew)=> [
+
+                'playerId' => $playersNew->playerID,
+                'link' => $playersNew->link,
+                'name' => $playersNew->name,
+            ], $playersNew);
+
+        return new JsonResponse([
+            'status' => 'success',
+            'players' => $playersArray,
+        ], Response::HTTP_OK);
     }
-
+/*
     #[Route('/add/', name: 'team_details_add')]
     public function add(string $teamId, string $teamName): Response
     {
@@ -61,4 +79,5 @@ class TeamDetailsController extends AbstractController
 
         return $this->redirectToRoute('team_details', ['teamId' => $teamId, 'teamName' => $teamName]);
     }
+*/
 }

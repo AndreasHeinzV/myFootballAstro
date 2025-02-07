@@ -1,0 +1,56 @@
+---
+const url = new URL(Astro.request.url);
+const teamId = url.searchParams.get('teamId') ?? 0;
+const teamName = url.searchParams.get('teamName') ?? 'Unknown Team';
+
+// Fetching team details from your API
+const response = await fetch(`http://localhost:4321/api/teamDetails?teamId=${teamId}&teamName=${encodeURIComponent(teamName)}`);
+const { status, players, message } = await response.json(); // Assume 'players' is an array
+
+// Define Player type
+type Player = {
+    playerID: number;
+    link: string;
+    name: string;
+};
+---
+
+<html lang="en">
+<head>
+    <title>Football Team Info</title>
+</head>
+<body>
+
+<h1>League Info: {teamName}</h1>
+
+{status === "error" || !players?.length ? (
+        <p>{message || "No players available"}</p>
+) : (
+        <ul>
+            {players.map((player: Player) => (
+                    <li>
+                        <a href={`/playerDetails?teamName=${teamName}&playerId=${player.playerID}&playerName=${player.name}${player.link}`}>
+                            {player.name}
+                        </a>
+                    </li>
+            ))}
+        </ul>
+)}
+
+{/*
+        {if status}
+            {if favoriteStatus}
+                <a href={`/team_details_delete?teamId=${players.teamID}&teamName=${players.teamName}`} class="base-button" type="submit">delete</a>
+            {else}
+                <a href={`/team_details_add?teamId=${players.teamID}&teamName=${players.teamName}`} class="base-button" type="submit">add</a>
+            {/if}
+        {/if}
+*/}
+
+{/*
+<a href={`/?page=shop&teamId=${players.teamID}&teamName=${encodeURIComponent(players.teamName)}`} class="button">View Products</a>
+<a href={`/club_shop?teamName=${players.teamName}&teamId=${players.teamID}`}>NEW SHOP</a>
+*/}
+
+</body>
+</html>

@@ -5,7 +5,56 @@ import Layout from '../layouts/Layout.astro';
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
+<html lang="en">
 
-<Layout>
-	<Welcome />
-</Layout>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Football Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        h2 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            width: 200px; /* Ensures all buttons have the same width */
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            transition: background 0.3s ease-in-out;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+<h2>Welcome to the Football Page</h2>
+
+<div class="container">
+    <a href="/register" class="btn">Go to Register</a>
+    <a href="/login" class="btn">Go to Login</a>
+    <a href="/football/leagues" class="btn">Go to Leagues</a>
+</div>
+</body>
+
+</html>

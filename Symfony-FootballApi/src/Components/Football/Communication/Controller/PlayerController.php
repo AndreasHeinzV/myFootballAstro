@@ -13,10 +13,12 @@ class PlayerController extends AbstractController
     public function __construct(private readonly FootballBusinessFacadeInterface $footballBusinessFacade)
     {
     }
-
-    #[Route('team/{teamName}/player/{playerName}', name: 'player_details')]
+    #[Route('player/{playerName}/{id}', name: 'player_details')]
+   // #[Route('team/{teamName}/player/{playerName}', name: 'player_details')]
     public function index(Request $request): Response
     {
+
+
         return $this->render('football/player_details.html.twig', [
             'playerData' => $this->footballBusinessFacade->getPlayer($request->query->get('id')),
         ]);
