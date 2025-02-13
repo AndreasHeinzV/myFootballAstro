@@ -2,6 +2,7 @@
 
 namespace App\Components\UserLogin\Communication\Controller;
 
+use App\Components\UserLogin\Business\Model\LoginUser;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,27 +12,25 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginController extends AbstractController
 {
-    #[Route(path: '/login', name: 'app_login')]
+    public function __construct(private LoginUser $loginUser)
+    {
+    }
+
+    #[Route(path: '/login', name: 'app_login', methods: ['POST'])]
     public function login(#[CurrentUser] ?User $user): Response
     {
         if (null === $user) {
             return $this->json([
-                'message' => 'missing credentials',
+                'message' => 'Missing credentials',
             ], Response::HTTP_UNAUTHORIZED);
         }
-        $token = "token";
+        $token = bin2hex(random_bytes(32));
+
+        $this->loginUser->updateLoginCredentials($user->getUserIdentifier(), $token);
 
         return $this->json([
             'user' => $user->getUserIdentifier(),
             'token' => $token,
         ], RESPONSE::HTTP_OK);
-    }
-
-    #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException(
-            'This method can be blank - it will be intercepted by the logout key on your firewall.'
-        );
     }
 }

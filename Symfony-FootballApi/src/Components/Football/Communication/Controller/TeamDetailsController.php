@@ -56,9 +56,9 @@ class TeamDetailsController extends AbstractController
             'players' => $playersArray,
         ], Response::HTTP_OK);
     }
-/*
+
     #[Route('/add/', name: 'team_details_add')]
-    public function add(string $teamId, string $teamName): Response
+    public function add(string $teamId, string $teamName): JsonResponse
     {
         // dd($request->attributes->get('teamId'));
         $user = $this->userBusinessFacade->getUserEntity($this->security->getUser());
@@ -79,5 +79,5 @@ class TeamDetailsController extends AbstractController
 
         return $this->redirectToRoute('team_details', ['teamId' => $teamId, 'teamName' => $teamName]);
     }
-*/
+
 }

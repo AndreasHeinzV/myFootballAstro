@@ -16,17 +16,18 @@ security:
             pattern: ^/register$
             security: false
         main:
+            custom_authenticators:
+                - App\Components\UserLogin\Business\Model\TokenAuthenticator
             lazy: true
             pattern: ^/
             provider: app_user_provider
-            form_login:
-                login_path: app_login
+            json_login:
                 check_path: app_login
-                enable_csrf: true
-                default_target_path: register_page
-            logout:
-                path: app_logout
-                target: app_login
+                username_path: username
+                password_path: password
+
+
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

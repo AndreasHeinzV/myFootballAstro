@@ -1,3 +1,10 @@
+---
+const token = await Astro.session?.get('token');
+if (token !== null) {
+    console.log(token);
+    return Astro.redirect('/');
+}
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>

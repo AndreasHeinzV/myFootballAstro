@@ -3,9 +3,16 @@ const url = new URL(Astro.request.url);
 const teamId = url.searchParams.get('teamId') ?? 0;
 const teamName = url.searchParams.get('teamName') ?? 'Unknown Team';
 
-// Fetching team details from your API
+
 const response = await fetch(`http://localhost:4321/api/teamDetails?teamId=${teamId}&teamName=${encodeURIComponent(teamName)}`);
-const { status, players, message } = await response.json(); // Assume 'players' is an array
+const {status, players, message} = await response.json();
+const loginStatus = await Astro.session?.get('user');
+let favoriteStatus = false;
+if (loginStatus) {
+    const favoriteStatusResponse = await fetch(`http://localhost:4321/api/leagueTeam/leagueTeamStatus?teamId=${teamId}`);
+    const favoriteData = await favoriteStatusResponse.json();
+    favoriteStatus = favoriteData.favoriteStatus;
+}
 
 // Define Player type
 type Player = {
@@ -37,15 +44,20 @@ type Player = {
         </ul>
 )}
 
-{/*
-        {if status}
-            {if favoriteStatus}
-                <a href={`/team_details_delete?teamId=${players.teamID}&teamName=${players.teamName}`} class="base-button" type="submit">delete</a>
-            {else}
-                <a href={`/team_details_add?teamId=${players.teamID}&teamName=${players.teamName}`} class="base-button" type="submit">add</a>
-            {/if}
-        {/if}
-*/}
+
+{loginStatus && (
+    favoriteStatus ? (
+            <a href={`/leagueTeam/remove?teamId=${teamId}`} class="base-button">
+                Remove from Favorites
+            </a>
+    ) : (
+            <a href={`/leagueTeam/add?teamId=${teamId}`} class="base-button">
+                Add to Favorites
+            </a>
+    )
+)}
+)}
+
 
 {/*
 <a href={`/?page=shop&teamId=${players.teamID}&teamName=${encodeURIComponent(players.teamName)}`} class="button">View Products</a>

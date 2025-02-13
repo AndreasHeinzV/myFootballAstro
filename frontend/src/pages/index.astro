@@ -1,9 +1,9 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+console.log(await Astro.session?.get('token'));
+const user = await Astro.session?.get('user');
+console.log(user);
 ---
 <html lang="en">
 
@@ -19,9 +19,11 @@ import Layout from '../layouts/Layout.astro';
             text-align: center;
             padding: 50px;
         }
+
         h2 {
             color: #333;
         }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -29,6 +31,7 @@ import Layout from '../layouts/Layout.astro';
             align-items: center;
             margin-top: 20px;
         }
+
         .btn {
             display: inline-block;
             width: 200px; /* Ensures all buttons have the same width */
@@ -41,6 +44,7 @@ import Layout from '../layouts/Layout.astro';
             text-align: center;
             transition: background 0.3s ease-in-out;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
@@ -48,13 +52,61 @@ import Layout from '../layouts/Layout.astro';
 </head>
 
 <body>
+{user !== null && (<h1>Hallo ${user}</h1>)}
+
 <h2>Welcome to the Football Page</h2>
 
 <div class="container">
-    <a href="/register" class="btn">Go to Register</a>
-    <a href="/login" class="btn">Go to Login</a>
+
+
+
     <a href="/football/leagues" class="btn">Go to Leagues</a>
+
+    {user === null && (
+            <a href="/register" class="btn">Go to Register</a>
+    )}
+
+    {user === null && (
+            <a href="/login" class="btn">Go to Login</a>
+    )}
+
+    {user !== null && (
+            <button id="logoutBtn" class="btn">Logout</button>
+    )}
+
 </div>
+
+<div id="message" class="message"></div>
+
+<script>
+    document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const messageDiv = document.getElementById('message') as HTMLDivElement;
+
+
+        const response = await fetch('http://localhost:4321/api/logout', {method: 'POST'});
+
+        try {
+            if (response.redirected) {
+
+                messageDiv.innerHTML = "logout successfully redirect in 5 sec";
+                messageDiv.classList.remove('error');
+                window.location.href = response.url;
+            } else {
+                const data = await response.json();
+                messageDiv.innerHTML = "Logout failed: " + data.message;
+                messageDiv.classList.add('error');
+
+            }
+
+        } catch (error) {
+            messageDiv.innerHTML = "An unexpected error occurred." + error;
+            messageDiv.classList.add('error');
+        }
+    });
+</script>
 </body>
+
 
 </html>

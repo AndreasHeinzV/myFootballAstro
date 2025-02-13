@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Components\Football\Communication\Controller;
 
 use App\Components\Football\Business\FootballBusinessFacadeInterface;

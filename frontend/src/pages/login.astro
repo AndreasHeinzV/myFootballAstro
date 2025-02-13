@@ -1,8 +1,8 @@
 ---
-const user = Astro.locals.user;
-
-if (user) {
-    return Astro.redirect("/");
+const token = await Astro.session?.get('token');
+if (token !== null) {
+    console.log(token);
+   return Astro.redirect('/');
 }
 ---
 
@@ -14,10 +14,11 @@ if (user) {
 </head>
 
 <body>
+
 <h2>Login</h2>
 <div id="error-message" class="error"></div>
 
-<form id="registration-form" action="/api/register" method="POST">
+<form id="login-form" action="/api/login" method="POST">
     <label for="email">Email:</label>
     <input
             type="email"
@@ -58,26 +59,25 @@ if (user) {
             }
         );
 
-        const textResponse = await response.text();
-        console.log("Raw response text:", textResponse);
+
         try {
+            if (response.redirected) {
+                errorMessageElement.innerHTML = "Login successful! redirect in 5 seconds.";
+                setTimeout(() => {
+                    window.location.assign(response.url);
+                }, 5000)
 
-            const data = JSON.parse(textResponse);
 
-
-            if (response.ok) {
-                if (data.status === 'success') {
-                    errorMessageElement.innerHTML = data.message;
-                }
             } else {
-
-                errorMessageElement.innerText = data.message || `Error: ${response.status}`;
+                const textResponse = await response.text();
+                const data = JSON.parse(textResponse);
+                errorMessageElement.innerText = data.message;
                 errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
             }
         } catch (e) {
 
             console.error("Error parsing JSON:", e);
-            errorMessageElement.innerText = `Unexpected response format: ${textResponse}`;
+            errorMessageElement.innerText = `Unexpected response format:}`;
             errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
         }
     });

@@ -2,7 +2,7 @@
 import type {APIRoute} from "astro";
 
 
-export const POST: APIRoute = async ({request, redirect}): Promise<Response> => {
+export const POST: APIRoute = async ({request, session, redirect}): Promise<Response> => {
     const formData = await request.formData();
 
     const data = {
@@ -22,21 +22,20 @@ export const POST: APIRoute = async ({request, redirect}): Promise<Response> => 
     const responseData = await response.json();
 
 
-    if (response.status === 200) {
-        return new Response(JSON.stringify({
-            status: 'success',
-            message: 'Astro: Successfully login',
-        }), {status: 200});
-    }
-
     if (response.status === 401) {
         return new Response(JSON.stringify({
             status: 'error',
-            message: responseData.message || 'Astro: Invalid Credentials',
+            message: 'Astro: Invalid Credentials',
         }), {status: response.status});
     }
-    return new Response(JSON.stringify({
-        status: 'error',
-        message: responseData.message || 'Something went wrong',
-    }), {status: response.status});
+
+    session?.set("token", responseData.token);
+    session?.set("user", responseData.user);
+
+    return redirect('/');
+
+    // return new Response(JSON.stringify({
+    //     status: 'error',
+    //     message: responseData.message || 'Something went wrong',
+    // }), {status: response.status});
 }

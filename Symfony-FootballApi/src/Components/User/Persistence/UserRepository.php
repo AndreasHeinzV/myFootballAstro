@@ -26,6 +26,21 @@ class UserRepository extends ServiceEntityRepository
 
         return null;
     }
+
+    public function getUserIdentifierByToken(string $token): ?string
+    {
+        $user = $this->findOneBy(['token' => $token]);
+        if ($user instanceof User) {
+            return $user->getUserIdentifier();
+        }
+        return $user->getUserIdentifier();
+    }
+
+    public function getUserByToken(string $token): ?User
+    {
+       return $this->findOneBy(['token' => $token]);
+
+    }
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */
