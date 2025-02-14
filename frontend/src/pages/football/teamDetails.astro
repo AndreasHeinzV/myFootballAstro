@@ -6,15 +6,51 @@ const teamName = url.searchParams.get('teamName') ?? 'Unknown Team';
 
 const response = await fetch(`http://localhost:4321/api/teamDetails?teamId=${teamId}&teamName=${encodeURIComponent(teamName)}`);
 const {status, players, message} = await response.json();
-const loginStatus = await Astro.session?.get('user');
+const user = await Astro.session?.get('user');
+const token = await Astro.session?.get('token');
 let favoriteStatus = false;
-if (loginStatus) {
-    const favoriteStatusResponse = await fetch(`http://localhost:4321/api/leagueTeam/leagueTeamStatus?teamId=${teamId}`);
-    const favoriteData = await favoriteStatusResponse.json();
-    favoriteStatus = favoriteData.favoriteStatus;
+let loginStatus = false;
+if (user !== null) {
+
+
+//----------------------------------------------------------------
+    // fetch POST request with token in body loaded from session
+    // todo check fo existing token before sending
+    const favoriteStatusResponse = await fetch(
+        `http://localhost:4321/api/leagueTeam/leagueTeamStatus?teamId=${teamId}`,
+        {
+            method: 'POST',
+            body: JSON.stringify({
+                    'token': await Astro.session?.get('token')
+                }
+            )
+        });
+//----------------------------------------------------------------
+    if (favoriteStatusResponse.ok) {
+        loginStatus = true;
+        const favoriteData = await favoriteStatusResponse.json();
+
+        favoriteStatus = favoriteData.status;
+        console.log('-----------------------------------------------------');
+        console.log('Astro frontend TeamDetails: ');
+        console.log('Symfony request response');
+        console.log('Symfony response status:', favoriteStatusResponse.status);
+        console.log('Symfony favorite status:' + favoriteData.status);
+        console.log('-----------------------------------------------------');
+    } else {
+        const favoriteData = await favoriteStatusResponse.json();
+        console.log('-----------------------------------------------------');
+        console.log('Astro frontend TeamDetails: ');
+        console.log('Symfony request response');
+        console.log('Symfony response status', favoriteStatusResponse.status);
+        console.log('Symfony response message:' + favoriteData.message);
+        console.log('Symfony favorite status:' + favoriteData.status);
+        console.log('-----------------------------------------------------');
+    }
 }
 
-// Define Player type
+
+
 type Player = {
     playerId: number;
     link: string;
@@ -44,25 +80,87 @@ type Player = {
         </ul>
 )}
 
-
 {loginStatus && (
     favoriteStatus ? (
-            <a href={`/leagueTeam/remove?teamId=${teamId}`} class="base-button">
+            <button
+                    class="base-button"
+                    id="removeFavoriteBtn"
+                    data-team-id={teamId}
+            >
                 Remove from Favorites
-            </a>
+            </button>
     ) : (
-            <a href={`/leagueTeam/add?teamId=${teamId}`} class="base-button">
+            <button
+                    class="base-button"
+                    id="addFavoriteBtn"
+                    data-team-id={teamId}
+            >
                 Add to Favorites
-            </a>
+            </button>
     )
 )}
-)}
 
 
-{/*
-<a href={`/?page=shop&teamId=${players.teamID}&teamName=${encodeURIComponent(players.teamName)}`} class="button">View Products</a>
-<a href={`/club_shop?teamName=${players.teamName}&teamId=${players.teamID}`}>NEW SHOP</a>
-*/}
+<script>
+    document.getElementById('addFavoriteBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
 
+        const teamId = (document.querySelector('[data-team-id]') as HTMLElement)?.dataset.teamId;
+        console.log("Team ID:", teamId);
+
+        const addFavoriteBtn = document.getElementById("addFavoriteBtn");
+        console.log("Add Button:", addFavoriteBtn);
+
+        if (addFavoriteBtn) {
+
+            console.log("Add Favorite Clicked");
+            const success = await handleFavoriteRequest("http://localhost:4321/api/leagueTeam/add/", teamId);
+            if (success) {
+                console.log("Team added to favorites!");
+                window.location.reload();
+            }
+        }
+    });
+
+
+    document.getElementById('removeFavoriteBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const teamId = (document.querySelector('[data-team-id]') as HTMLElement)?.dataset.teamId;
+        console.log("Team ID:", teamId);
+
+        const removeFavoriteBtn = document.getElementById("removeFavoriteBtn");
+        console.log("Remove Button:", removeFavoriteBtn);
+
+
+        if (removeFavoriteBtn) {
+            console.log("Remove Favorite Clicked");
+            const success = await handleFavoriteRequest("http://localhost:4321/api/leagueTeam/remove/", teamId);
+            if (success) {
+                console.log("Team removed from favorites!");
+                window.location.reload();
+            }
+        }
+    });
+
+
+
+    async function handleFavoriteRequest(url: string, teamId: string): Promise<boolean> {
+        try {
+            console.log(`Sending request to: ${url} with teamId: ${teamId}`);
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(teamId),
+            });
+            return response.ok;
+        } catch (error) {
+            console.error("Error:", error);
+            return false;
+        }
+    }
+</script>
 </body>
 </html>

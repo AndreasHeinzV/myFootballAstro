@@ -57,18 +57,6 @@ class TeamDetailsController extends AbstractController
         ], Response::HTTP_OK);
     }
 
-    #[Route('/add/', name: 'team_details_add')]
-    public function add(string $teamId, string $teamName): JsonResponse
-    {
-        // dd($request->attributes->get('teamId'));
-        $user = $this->userBusinessFacade->getUserEntity($this->security->getUser());
-        if ($user instanceof User) {
-            $this->userFavoriteBusinessFacade->addFavorite($user, $teamId);
-        }
-
-        return $this->redirectToRoute('team_details', ['teamId' => $teamId, 'teamName' => $teamName]);
-    }
-
     #[Route('/delete/', name: 'team_details_delete')]
     public function delete(string $teamId, string $teamName): Response
     {
