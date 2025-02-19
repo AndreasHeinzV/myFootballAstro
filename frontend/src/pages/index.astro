@@ -59,7 +59,6 @@ console.log(user);
 <div class="container">
 
 
-
     <a href="/football/leagues" class="btn">Go to Leagues</a>
 
     {user === null && (
@@ -69,6 +68,11 @@ console.log(user);
     {user === null && (
             <a href="/login" class="btn">Go to Login</a>
     )}
+
+    {user !== null && (
+            <a href="/favorites" class="btn">Go to Favorites</a>
+    )}
+    <a href="/home/andreasheinz/PhpstormProjects/myFootball/frontend/src/pages/forgotPassword" class="btn">Reset Password</a>
 
     {user !== null && (
             <button id="logoutBtn" class="btn">Logout</button>

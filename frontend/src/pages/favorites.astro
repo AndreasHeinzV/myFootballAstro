@@ -1,0 +1,149 @@
+---
+const token = await Astro.session?.get('token');
+console.log(token);
+if (token === null) {
+    console.log("No token found access denied to favorites page.");
+    return Astro.redirect('/');
+}
+
+const response = await fetch(`http://localhost:4321/favorite/favorites/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        token,
+    }),
+});
+
+const {status, favorites, message} = await response.json();
+
+type Favorite = {
+    teamID: number;
+    teamName: string;
+    crest: string;
+};
+---
+
+<html>
+<head></head>
+<body>
+<h1>Favorite clubs</h1>
+
+{status === "error" || !favorites?.length ? (
+        <p>{message || "No favorite clubs available"}</p>
+) : (
+        <ul>
+            {favorites.map((favorite: Favorite, index: number) => (
+                    <li>
+                        {favorite.teamName}
+                        <img src={favorite.crest} alt={favorite.teamName} width="50"/>
+
+                        <button
+                                class="base-button"
+                                id="removeFavoriteBtn"
+                                data-team-id={favorite.teamID}
+                        >
+                            Remove
+                        </button>
+
+                        {index !== 0 && (
+                                <button
+                                        class="base-button"
+                                        id="moveUpFavoriteBtn"
+                                        data-team-id={favorite.teamID}
+                                >
+                                    Move Up
+                                </button>
+                        )}
+
+
+                        {index !== favorites.length - 1 && (
+                                <button
+                                        class="base-button"
+                                        id="moveDownFavoriteBtn"
+                                        data-team-id={favorite.teamID}
+                                >
+                                    Move Down
+                                </button>
+                        )}
+                    </li>
+            ))}
+        </ul>
+)}
+</body>
+<script>
+
+
+    document.querySelectorAll('#removeFavoriteBtn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const teamId = (e.target as HTMLElement)?.dataset.teamId;
+
+            if (teamId) {
+                console.log("Remove Favorite Clicked");
+                const success = await handleFavoriteRequest("http://localhost:4321/api/leagueTeam/remove/", teamId);
+                if (success) {
+                    console.log("Team removed from favorites!");
+                    window.location.reload();
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('#moveUpFavoriteBtn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const teamId = (e.target as HTMLElement)?.dataset.teamId;
+
+            if (teamId) {
+                console.log("Move Up Favorite Clicked");
+                console.log("teamId " + teamId);
+                const success = await handleFavoriteRequest("http://localhost:4321/favorite/moveUp", teamId);
+                if (success) {
+                    console.log("Moved up favorite!");
+                    window.location.reload();
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('#moveDownFavoriteBtn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const teamId = (e.target as HTMLElement)?.dataset.teamId;
+
+            if (teamId) {
+                console.log("Move Down Favorite Clicked");
+                const success = await handleFavoriteRequest("http://localhost:4321/favorite/moveDown", teamId);
+                if (success) {
+                    console.log("Moved down favorite!");
+                    window.location.reload();
+                }
+            }
+        });
+    });
+
+
+    async function handleFavoriteRequest(url: string, teamId: string): Promise<boolean> {
+        try {
+            console.log(`Sending request to: ${url} with teamId: ${teamId}`);
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(teamId),
+            });
+            return response.ok;
+        } catch (error) {
+            console.error("Error:", error);
+            return false;
+        }
+    }
+
+</script>
+</html>

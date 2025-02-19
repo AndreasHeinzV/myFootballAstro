@@ -1,0 +1,34 @@
+import type {APIRoute} from "astro";
+
+
+export const GET: APIRoute = async ({request}) => {
+    const formData = await request.formData();
+
+    const data = {
+        email: formData.get("email")?.toString(),
+    };
+
+    const response = await fetch('http://127.0.0.1:8000/forgotPassword', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+
+    const responseData = await response.json();
+
+    if (response.status === 200) {
+        return new Response(JSON.stringify({
+            status: "success",
+            message: "Password reset request send if email already exist.",
+        }), {status: 200});
+    } else {
+        return new Response(
+            JSON.stringify({
+                status: "error",
+                message: responseData.message || "Something went wrong",
+            }), {status: response.status})
+    }
+}

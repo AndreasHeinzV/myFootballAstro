@@ -11,6 +11,8 @@ use App\Components\UserFavorite\Persistence\UserFavoriteRepositoryInterface;
 use App\Entity\Favorite;
 use App\Entity\User;
 
+use function PHPUnit\Framework\throwException;
+
 readonly class FavoriteCalc implements FavoriteCalcInterface
 {
     public function __construct(
@@ -65,11 +67,14 @@ readonly class FavoriteCalc implements FavoriteCalcInterface
             $favoritePosition = $userFavoriteEntity->getFavoritePosition();
             $firstPosition = $this->userFavoriteRepository->getUserFavoritesFirstPosition($user->getId());
 
+
             if (false !== $firstPosition && $firstPosition < $favoritePosition) {
+
                 $positionToChange = $this->userFavoriteRepository->getFavoritePositionAboveCurrentPosition(
                     $userId,
                     $favoritePosition
                 );
+              //  throw new \Exception($positionToChange + "position");
                 $positionEntityToChange = $this->userFavoriteRepository->getUserFavoriteEntityByPosition(
                     $userId,
                     $positionToChange
