@@ -1,0 +1,114 @@
+---
+const token = Astro.params.token;
+
+if (!token) {
+    return Astro.redirect(`/reset-password/`);
+}
+console.log(token);
+const validateTokeResponse = await fetch(`http://localhost:4321/api/resetPassword/validateToken`, {
+    method: 'POST',
+    body: JSON.stringify({
+            'token': token
+        }
+    )
+});
+
+const tokenResponse = await validateTokeResponse.json();
+
+let tokenValidation = false;
+let tokenMessage = "";
+if (validateTokeResponse.ok) {
+    tokenValidation = tokenResponse.tokenValidation;
+    console.log(tokenResponse.tokenValidation);
+}
+
+if (!tokenValidation) {
+    tokenMessage = tokenResponse.message;
+}
+---
+<html lang="en">
+<head></head>
+<body>
+
+<h1>Reset Password</h1>
+
+<div id="error-message" class="error">
+    {tokenMessage && <p>{tokenMessage}</p>}
+</div>
+
+{tokenValidation && (
+        <form id="resetPassword-form" action=`/api/resetPassword/resetPassword/${token}` method="POST">
+
+            <label for="password">Password:</label>
+            <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+            />
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Re-enter your password"
+                    required
+            />
+
+            <button type="submit">Submit</button>
+        </form>
+)}
+</body>
+
+<script>
+    const errorMessageElement = document.getElementById('error-message')!;
+
+
+    document.querySelector('form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        errorMessageElement.innerHTML = '';
+        const formElement = e.target as HTMLFormElement;
+    const url =formElement.action;
+
+        const token = url.substring(formElement.action.lastIndexOf("/") + 1);
+        const formData = new FormData(formElement);
+        if (token) {
+            formData.append('token', token);
+        }
+
+
+        const response = await fetch(
+           'http://localhost:4321/api/resetPassword/resetPassword',
+            {
+                method: formElement.method,
+                body: formData,
+            }
+        );
+        const data = await response.json();
+
+             console.log("Raw response text:", data);
+        try {
+
+            if (response.ok) {
+                if (data.status === 'success') {
+                    errorMessageElement.innerHTML = data.message;
+                }
+            } else {
+
+                errorMessageElement.innerText = data.message || `Error: ${response.status}`;
+                errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        } catch (e) {
+
+            console.error("Error parsing JSON:", e);
+            errorMessageElement.innerText = `Unexpected response format: ${data}`;
+            errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+    });
+
+
+</script>
+</html>

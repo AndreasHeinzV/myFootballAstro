@@ -92,27 +92,13 @@ if (token !== null) {
                     errorMessageElement.innerHTML = data.message;
                 }
             } else {
-
                 errorMessageElement.innerText = data.message || `Error: ${response.status}`;
                 errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
             }
         } catch (e) {
-
             console.error("Error parsing JSON:", e);
             errorMessageElement.innerText = `Unexpected response format: ${textResponse}`;
             errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
-
-            /*
-        const data = await response.json();
-
-        if (data.status === 'success') {
-            errorMessageElement.innerHTML = data.message;
-        } else {
-            console.log(data.message);
-            errorMessageElement.innerText = response.status && data.message;
-            errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
-        }
-        */
         }
     });
 </script>

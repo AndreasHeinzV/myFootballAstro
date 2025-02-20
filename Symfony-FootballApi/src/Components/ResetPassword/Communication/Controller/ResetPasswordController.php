@@ -22,7 +22,7 @@ use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
-#[Route('/forgotPassword')]
+#[Route('/reset-password')]
 class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
@@ -34,10 +34,7 @@ class ResetPasswordController extends AbstractController
     ) {
     }
 
-    /**
-     * Display & process form to request a password reset.
-     */
-    #[Route('', name: 'app_forgot_password_request')]
+    #[Route('/request', name: 'app_forgot_password_request', methods: ['POST'])]
     public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): JsonResponse
     {
         try {
@@ -49,17 +46,20 @@ class ResetPasswordController extends AbstractController
             ], 400);
         }
 
-        $form = $this->createForm(ResetPasswordRequestFormType::class);
-        $form->handleRequest($request);
 
-
-        $email = $form->get('email')->getData();
+        if (empty($content['email']) || !filter_var($content['email'], FILTER_VALIDATE_EMAIL)) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Missing or invalid email address',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        $email = $content['email'];
 
         $user = $this->userBusinessFacade->getUserEntityByMail($email);
         if (!$user) {
             return $this->json([
                 'status' => 'success',
-                'message' => 'if there is a existing user with this email, a request will be sent.'
+                'message' => 'if there is a existing user with this email, a request will be sent.',
             ], Response::HTTP_OK);
         }
 
@@ -70,7 +70,7 @@ class ResetPasswordController extends AbstractController
             return $this->json([
                 'status' => 'error',
                 'message' => 'generate reset token failed',
-            ],Response::HTTP_INTERNAL_SERVER_ERROR);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $emailBody = '
@@ -81,15 +81,57 @@ class ResetPasswordController extends AbstractController
     <p>Cheers!</p>
 ';
 
+        $email = (new TemplatedEmail())
+            ->from(new Address('resetPassword@footballapi.com'))
+            ->to($user->getUserIdentifier())
+            ->subject('Your password reset request')
+            ->html($emailBody);
 
-        $this->processSendingPasswordResetEmail($email, $mailer, $translator);
+        $mailer->send($email);
 
-        return $this->json([
-            'status' => 'success',
-            'message' => "Request successful",
+        return new JsonResponse([
+            'message' => 'Password reset link sent.',
         ], Response::HTTP_OK);
     }
 
+    #[Route('/validateToken', name: 'app_reset_password_validate_token', methods: ['POST'])]
+    public function validateToken(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $token = $data['token'] ?? null;
+
+        if (!$token) {
+            return new JsonResponse([
+                'tokenValidation' => false,
+                'message' => 'Token is missing.',
+            ], 200);
+        }
+
+
+        try {
+            $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
+        } catch (ResetPasswordExceptionInterface $e) {
+            return new JsonResponse([
+                'tokenValidation' => false,
+                'message' => "bananna" . $e->getMessage(),
+            ], status: 200);
+        }
+
+        if (!$user instanceof User) {
+            return new JsonResponse([
+                'tokenValidation' => false,
+                'message' => 'Invalid or expired token.',
+            ], 200);
+        }
+
+        return new JsonResponse([
+            'tokenValidation' => true,
+            'message' => 'Token is valid.',
+        ], 200);
+    }
+
+
+    /*
     #[Route('/check-email', name: 'app_check_email')]
     public function checkEmail(): Response
     {
@@ -107,100 +149,50 @@ class ResetPasswordController extends AbstractController
     /**
      * Validates and process the reset URL that the user clicked in their email.
      */
-    #[Route('/reset/{token}', name: 'app_reset_password')]
-    public function reset(
+    #[Route('/reset/', name: 'app_reset_password', methods: ['POST']) ]
+    public function resetPassword(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        TranslatorInterface $translator,
-        ?string $token = null
-    ): Response {
-        if ($token) {
-            $this->storeTokenInSession($token);
-
-            return $this->redirectToRoute('app_reset_password');
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        if (!isset($data['token'])){
+           return new JsonResponse([
+               'status' => 'error',
+               'message' => 'Token is missing.',
+           ], Response::HTTP_UNAUTHORIZED);
+        }
+        if (!isset($data['password']) || !preg_match(
+                "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/",
+                $data['password']
+            )) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Password must be at least 6 characters long and include at least one uppercase letter, one 
+                lowercase letter, one number, and one special character.',
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = $this->getTokenFromSession();
+        $user = $this->resetPasswordHelper->validateTokenAndFetchUser($data['token']);
 
-        if (null === $token) {
-            throw $this->createNotFoundException('No reset password token found in the URL or in the session.');
+        if (!$user instanceof User) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Invalid or expired token.',
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
-        try {
-            /** @var User $user */
-            $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
-        } catch (ResetPasswordExceptionInterface $e) {
-            $this->addFlash(
-                'reset_password_error',
-                sprintf(
-                    '%s - %s',
-                    $translator->trans(
-                        ResetPasswordExceptionInterface::MESSAGE_PROBLEM_VALIDATE,
-                        [],
-                        'ResetPasswordBundle'
-                    ),
-                    $translator->trans($e->getReason(), [], 'ResetPasswordBundle')
-                )
-            );
+        $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+        $user->setPassword($hashedPassword);
 
-            return $this->redirectToRoute('app_forgot_password_request');
-        }
+        $this->resetPasswordHelper->removeResetRequest($data['token']);
+        $this->entityManager->flush();
 
-
-        $form = $this->createForm(ChangePasswordFormType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->resetPasswordHelper->removeResetRequest($token);
-
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-
-
-            $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
-            $this->entityManager->flush();
-
-
-            $this->cleanSessionAfterReset();
-
-            return $this->redirectToRoute('app_login');
-        }
-
-        return $this->render('reset_password/reset.html.twig', [
-            'resetForm' => $form,
-        ]);
+        return new JsonResponse([
+            'status' => 'success',
+            'message' => 'Password successfully reset.',
+        ], Response::HTTP_OK);
     }
-
-    private function processSendingPasswordResetEmail(
-        string $emailFormData,
-        MailerInterface $mailer,
-        TranslatorInterface $translator
-    ): RedirectResponse {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy([
-            'email' => $emailFormData,
-        ]);
-
-
-        if (!$user) {
-            return $this->redirectToRoute('app_check_email');
-        }
-
-        try {
-            $resetToken = $this->resetPasswordHelper->generateResetToken($user);
-        } catch (ResetPasswordExceptionInterface $e) {
-            // If you want to tell the user why a reset email was not sent, uncomment
-            // the lines below and change the redirect to 'app_forgot_password_request'.
-            // Caution: This may reveal if a user is registered or not.
-            //
-            // $this->addFlash('reset_password_error', sprintf(
-            //     '%s - %s',
-            //     $translator->trans(ResetPasswordExceptionInterface::MESSAGE_PROBLEM_HANDLE, [], 'ResetPasswordBundle'),
-            //     $translator->trans($e->getReason(), [], 'ResetPasswordBundle')
-            // ));
-
-            return $this->redirectToRoute('app_check_email');
-        }
-
+    /*
         $email = (new TemplatedEmail())
             ->from(new Address('service@banana.de', 'Mailer'))
             ->to((string)$user->getEmail())
@@ -211,10 +203,8 @@ class ResetPasswordController extends AbstractController
             ]);
 
         $mailer->send($email);
+*/
+    // Store the token object in session for retrieval in check-email route.
 
-        // Store the token object in session for retrieval in check-email route.
-        $this->setTokenObjectInSession($resetToken);
 
-        return $this->redirectToRoute('app_check_email');
-    }
 }

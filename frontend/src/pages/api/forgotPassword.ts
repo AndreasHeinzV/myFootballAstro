@@ -1,14 +1,14 @@
 import type {APIRoute} from "astro";
 
 
-export const GET: APIRoute = async ({request}) => {
+export const POST: APIRoute = async ({request}) => {
     const formData = await request.formData();
 
     const data = {
         email: formData.get("email")?.toString(),
     };
 
-    const response = await fetch('http://127.0.0.1:8000/forgotPassword', {
+    const response = await fetch('http://127.0.0.1:8000/reset-password/request', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -21,14 +21,22 @@ export const GET: APIRoute = async ({request}) => {
 
     if (response.status === 200) {
         return new Response(JSON.stringify({
-            status: "success",
-            message: "Password reset request send if email already exist.",
+            status: responseData.status,
+            message: responseData.message,
         }), {status: 200});
-    } else {
-        return new Response(
-            JSON.stringify({
-                status: "error",
-                message: responseData.message || "Something went wrong",
-            }), {status: response.status})
     }
+
+    if (response.status === 400) {
+        return new Response(JSON.stringify({
+            status: responseData.status,
+            message: responseData?.message,
+        }), {status: 400});
+    }
+
+    return new Response(
+        JSON.stringify({
+            status: "error",
+            message: responseData.message || "Something went wrong",
+        }), {status: response.status})
+
 }
