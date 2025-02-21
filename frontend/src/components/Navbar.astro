@@ -1,0 +1,27 @@
+---
+const token = await Astro.session?.get('token');
+const user = await Astro.session?.get('user');
+---
+
+<div>
+                <a href="/football/leagues" class="btn">Go to Leagues</a>
+
+                {user === null && (
+                        <a href="/register" class="btn">Go to Register</a>
+                )}
+
+                {user === null && (
+                        <a href="/login" class="btn">Go to Login</a>
+                )}
+
+                {user !== null && (
+                        <a href="/favorites" class="btn">Go to Favorites</a>
+                )}
+                <a href="/forgotPassword" class="btn">Reset Password</a>
+
+                {user !== null && (
+                        <button id="logoutBtn" class="btn">Logout</button>
+                )}
+    )}
+</div>
+

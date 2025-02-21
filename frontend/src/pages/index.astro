@@ -1,86 +1,42 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 console.log(await Astro.session?.get('token'));
 const user = await Astro.session?.get('user');
 console.log(user);
 ---
-<html lang="en">
+
+<Layout title={"Football Page"}>
+    {user !== null && (<h1>Hallo ${user}</h1>)}
+
+    <h2>Welcome to the Football Page</h2>
+
+    <div class="container">
 
 
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Football Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 50px;
-        }
+        <a href="/football/leagues" class="btn">Go to Leagues</a>
 
-        h2 {
-            color: #333;
-        }
+        {user === null && (
+                <a href="/register" class="btn">Go to Register</a>
+        )}
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-            margin-top: 20px;
-        }
+        {user === null && (
+                <a href="/login" class="btn">Go to Login</a>
+        )}
 
-        .btn {
-            display: inline-block;
-            width: 200px; /* Ensures all buttons have the same width */
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-            transition: background 0.3s ease-in-out;
-        }
+        {user !== null && (
+                <a href="/favorites" class="btn">Go to Favorites</a>
+        )}
+        <a href="/forgotPassword" class="btn">Reset Password</a>
 
-        .btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
+        {user !== null && (
+                <button id="logoutBtn" class="btn">Logout</button>
+        )}
 
-<body>
-{user !== null && (<h1>Hallo ${user}</h1>)}
+    </div>
 
-<h2>Welcome to the Football Page</h2>
+    <div id="message" class="message"></div>
 
-<div class="container">
-
-
-    <a href="/football/leagues" class="btn">Go to Leagues</a>
-
-    {user === null && (
-            <a href="/register" class="btn">Go to Register</a>
-    )}
-
-    {user === null && (
-            <a href="/login" class="btn">Go to Login</a>
-    )}
-
-    {user !== null && (
-            <a href="/favorites" class="btn">Go to Favorites</a>
-    )}
-    <a href="/forgotPassword" class="btn">Reset Password</a>
-
-    {user !== null && (
-            <button id="logoutBtn" class="btn">Logout</button>
-    )}
-
-</div>
-
-<div id="message" class="message"></div>
+</Layout>
 
 <script>
     document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
@@ -110,7 +66,3 @@ console.log(user);
         }
     });
 </script>
-</body>
-
-
-</html>
