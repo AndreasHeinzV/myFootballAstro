@@ -5,14 +5,9 @@ const user = await Astro.session?.get('user');
 console.log(user);
 ---
 
-<Layout title={"Football Page"}>
+<Layout title={"Index Page"}>
     {user !== null && (<h1>Hallo ${user}</h1>)}
-
-    <h2>Welcome to the Football Page</h2>
-
     <div class="container">
-
-
         <a href="/football/leagues" class="btn">Go to Leagues</a>
 
         {user === null && (
@@ -33,6 +28,9 @@ console.log(user);
         )}
 
     </div>
+
+
+
 
     <div id="message" class="message"></div>
 

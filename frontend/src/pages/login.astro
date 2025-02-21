@@ -1,4 +1,5 @@
 ---
+import Layout from "../layouts/Layout.astro";
 const token = await Astro.session?.get('token');
 if (token !== null) {
     console.log(token);
@@ -6,14 +7,8 @@ if (token !== null) {
 }
 ---
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Login Page</title>
-</head>
 
-<body>
+<Layout>
 
 <h2>Login</h2>
 <div id="error-message" class="error"></div>
@@ -40,6 +35,7 @@ if (token !== null) {
 
     <button type="submit">Submit</button>
 </form>
+</Layout>
 
 <script>
 

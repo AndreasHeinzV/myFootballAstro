@@ -1,4 +1,5 @@
 ---
+import Layout from "../../layouts/Layout.astro";
 const url = new URL(Astro.request.url);
 const playerId = url.searchParams.get('playerId') ?? 0;
 const teamName = url.searchParams.get('teamName') ?? 'Unknown Team';
@@ -15,15 +16,7 @@ type Player = {
     shirtNumber: number,
 }
 ---
-
-<html>
-
-<head>
-    <title>Players Info</title>
-</head>
-<body>
-
-
+<Layout>
 <h1> Player Info For {playerName}</h1>
 
 {status === "error" || !data ? (
@@ -37,5 +30,4 @@ type Player = {
         </ul>
 )}
 
-</body>
-</html>
+</Layout>

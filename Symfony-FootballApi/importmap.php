@@ -25,4 +25,19 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    '@tailwindcss/vite' => [
+        'version' => '4.0.7',
+    ],
+    '@tailwindcss/node' => [
+        'version' => '4.0.7',
+    ],
+    '@tailwindcss/node/require-cache' => [
+        'version' => '4.0.7',
+    ],
+    '@tailwindcss/oxide' => [
+        'version' => '4.0.7',
+    ],
+    'lightningcss' => [
+        'version' => '1.29.1',
+    ],
 ];

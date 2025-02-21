@@ -1,4 +1,5 @@
 ---
+import Layout from "../../layouts/Layout.astro";
 const token = Astro.params.token;
 
 if (!token) {
@@ -26,9 +27,7 @@ if (!tokenValidation) {
     tokenMessage = tokenResponse.message;
 }
 ---
-<html lang="en">
-<head></head>
-<body>
+<Layout>
 
 <h1>Reset Password</h1>
 
@@ -60,8 +59,7 @@ if (!tokenValidation) {
             <button type="submit">Submit</button>
         </form>
 )}
-</body>
-
+</Layout>
 <script>
     const errorMessageElement = document.getElementById('error-message')!;
 
@@ -108,7 +106,4 @@ if (!tokenValidation) {
             errorMessageElement.scrollIntoView({behavior: 'smooth', block: 'center'});
         }
     });
-
-
 </script>
-</html>

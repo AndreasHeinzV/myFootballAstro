@@ -1,4 +1,5 @@
 ---
+import Layout from "../layouts/Layout.astro";
 const token = await Astro.session?.get('token');
 console.log(token);
 if (token === null) {
@@ -24,10 +25,7 @@ type Favorite = {
     crest: string;
 };
 ---
-
-<html>
-<head></head>
-<body>
+<Layout>
 <h1>Favorite clubs</h1>
 
 {status === "error" || !favorites?.length ? (
@@ -56,8 +54,6 @@ type Favorite = {
                                     Move Up
                                 </button>
                         )}
-
-
                         {index !== favorites.length - 1 && (
                                 <button
                                         class="base-button"
@@ -71,7 +67,7 @@ type Favorite = {
             ))}
         </ul>
 )}
-</body>
+</Layout>
 <script>
 
 
@@ -146,4 +142,4 @@ type Favorite = {
     }
 
 </script>
-</html>
+

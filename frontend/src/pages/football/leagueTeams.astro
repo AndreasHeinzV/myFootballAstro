@@ -1,4 +1,5 @@
 ---
+import Layout from "../../layouts/Layout.astro";
 const url = new URL(Astro.request.url);
 const leagueId = url.searchParams.get('leagueId') ?? '';
 const leagueName = url.searchParams.get('leagueName') ?? 'Unknown League';
@@ -20,11 +21,7 @@ type Team = {
 };
 
 ---
-<html>
-<head>
-    <title>Football League Info</title>
-</head>
-<body>
+<Layout>
 <h1>League Info: {leagueName}</h1>
 
 {status === "error" || !data?.length ? (
@@ -59,5 +56,4 @@ type Team = {
             ))}
         </table>
 )}
-</body>
-</html>
+</Layout>
