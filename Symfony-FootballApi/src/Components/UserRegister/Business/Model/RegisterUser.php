@@ -29,5 +29,4 @@ class RegisterUser
         $user = $this->userRepository->findUserByMail($dto->email);
         return $user instanceof User;
     }
-
 }

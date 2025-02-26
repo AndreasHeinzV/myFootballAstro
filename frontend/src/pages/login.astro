@@ -3,39 +3,57 @@ import Layout from "../layouts/Layout.astro";
 const token = await Astro.session?.get('token');
 if (token !== null) {
     console.log(token);
-   return Astro.redirect('/');
+    return Astro.redirect('/');
 }
 ---
 
-
 <Layout>
+    <div class="flex justify-center h-screen items-start pt-[25vh]">
+        <div class="bgColorLight rounded-2xl p-8">
+            <div class="text-center space-y-6 m-5">
+                <h2 class="text-3xl font-bold">Login</h2>
+                <div id="error-message" class="error"></div>
+                <div class="space-y-6">
+                    <form id="login-form" action="/api/login" method="POST" class="space-y-4">
+                        <!-- Email Field -->
+                        <div class="flex items-center space-x-2">
+                            <label for="email" class="w-20 text-right">Email:</label>
+                            <input
+                                    class="basicInput w-64 p-2 rounded-md"
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Enter your email"
+                                    required
+                            />
+                        </div>
 
-<h2>Login</h2>
-<div id="error-message" class="error"></div>
+                        <!-- Password Field -->
+                        <div class="flex items-center space-x-2">
+                            <label for="password" class="w-20 text-right">Password:</label>
+                            <input
+                                    class="basicInput w-64 p-2 rounded-md"
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    required
+                            />
+                        </div>
 
-<form id="login-form" action="/api/login" method="POST">
-    <label for="email">Email:</label>
-    <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-    />
-
-    <label for="password">Password:</label>
-    <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-    />
-
-
-    <button type="submit">Submit</button>
-</form>
+                        <!-- Submit Button -->
+                        <div class="flex items-center justify-center space-x-2">
+                            <button class="buttonLayout w-full p-2 m-2 item-center rounded-md mt" type="submit">Login</button>
+                            <a href="/register" class=" buttonLayoutSecond item-center m-2"> Sign Up</a>
+                        </div>
+                        <a href="/forgotPassword" class=""> Forgot Password?</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </Layout>
+
 
 <script>
 

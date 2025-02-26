@@ -1,69 +1,90 @@
 ---
+import Layout from "../layouts/Layout.astro";
 const token = await Astro.session?.get('token');
 if (token !== null) {
     console.log(token);
     return Astro.redirect('/');
 }
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Registration Page</title>
-</head>
+<Layout>
+    <div class="flex justify-center h-screen items-start pt-[20vh]">
+        <div class="bgColorLight rounded-2xl p-8">
+            <div class="text-center space-y-6 m-4">
+                <h2 class="text-3xl font-bold">Register</h2>
 
-<body>
-<h2>Register</h2>
-<div id="error-message" class="error"></div>
+                <div id="error-message" class="error"></div>
 
-<form id="registration-form" action="/api/register" method="POST">
-    <label for="email">Email:</label>
-    <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-    />
+                <form id="registration-form" action="/api/register" method="POST" class="space-y-4">
 
-    <label for="firstName">FirstName:</label>
-    <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            placeholder="Enter your firstName"
-            required
-    />
-    <label for="lastName">LastName:</label>
-    <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            placeholder="Enter your last name"
-            required
-    />
+                    <div class="flex items-center space-x-2">
+                        <label for="email" class="w-40 text-right">Email:</label>
+                        <input
+                                class="basicInput w-64 p-2 rounded-md"
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                required
+                        />
+                    </div>
 
-    <label for="password">Password:</label>
-    <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-    />
+                    <div class="flex items-center space-x-2">
+                        <label for="firstName" class="w-40 text-right">First Name:</label>
+                        <input
+                                class="basicInput w-64 p-2 rounded-md"
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                placeholder="Enter your first name"
+                                required
+                        />
+                    </div>
 
-    <label for="confirmPassword">Confirm Password:</label>
-    <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            placeholder="Re-enter your password"
-            required
-    />
+                    <div class="flex items-center space-x-2">
+                        <label for="lastName" class="w-40 text-right">Last Name:</label>
+                        <input
+                                class="basicInput w-64 p-2 rounded-md"
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                placeholder="Enter your last name"
+                                required
+                        />
+                    </div>
 
-    <button type="submit">Submit</button>
-</form>
+
+                    <div class="flex items-center space-x-2">
+                        <label for="password" class="w-40 text-right">Password:</label>
+                        <input
+                                class="basicInput w-64 p-2 rounded-md"
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                        />
+                    </div>
+
+
+                    <div class="flex items-center space-x-2">
+                        <label for="confirmPassword" class="w-40 text-right">Confirm Password:</label>
+                        <input
+                                class="basicInput w-64 p-2 rounded-md"
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Re-enter your password"
+                                required
+                        />
+                    </div>
+
+
+                    <button class="buttonLayout w-full p-2 rounded-md mt-4" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</Layout>
 
 <script>
     const errorMessageElement = document.getElementById('error-message')!;
@@ -102,5 +123,3 @@ if (token !== null) {
         }
     });
 </script>
-</body>
-</html>

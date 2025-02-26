@@ -8,23 +8,23 @@ console.log(user);
 <Layout title={"Index Page"}>
     {user !== null && (<h1>Hallo ${user}</h1>)}
     <div class="container">
-        <a href="/football/leagues" class="btn">Go to Leagues</a>
+        <a href="/football/leagues" class="buttonLayout">Go to Leagues</a>
 
         {user === null && (
-                <a href="/register" class="btn">Go to Register</a>
+                <a href="/register" class="buttonLayout">Go to Register</a>
         )}
 
         {user === null && (
-                <a href="/login" class="btn">Go to Login</a>
+                <a href="/login" class="buttonLayout">Go to Login</a>
         )}
 
         {user !== null && (
-                <a href="/favorites" class="btn">Go to Favorites</a>
+                <a href="/favorites" class="buttonLayout">Go to Favorites</a>
         )}
-        <a href="/forgotPassword" class="btn">Reset Password</a>
+        <a href="/forgotPassword" class="buttonLayout">Reset Password</a>
 
         {user !== null && (
-                <button id="logoutBtn" class="btn">Logout</button>
+                <button id="logoutBtn" class="buttonLayout">Logout</button>
         )}
 
     </div>
