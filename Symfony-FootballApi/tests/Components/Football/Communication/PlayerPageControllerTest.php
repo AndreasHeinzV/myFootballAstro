@@ -34,12 +34,17 @@ class PlayerPageControllerTest extends WebTestCase
     public function testGetPlayer(): void
     {
         self::bootKernel();
-
-        $this->client->request('GET', '/team/Eintracht%20Frankfurt/player/Kaua?page=player&id=189482');
+        $url = '/player/Andrea%20Natali/274021';
+        $this->client->request('GET', $url);
 
         $response = $this->client->getResponse();
         $responseContent = $response->getContent();
+        $data = json_decode($responseContent, true, 512, JSON_THROW_ON_ERROR);
         self::assertResponseIsSuccessful($responseContent);
-        self::assertStringContainsString('Kaua', $responseContent);
+
+       self::assertResponseHeaderSame('Content-Type', 'application/json');
+       self::assertSame(200, $response->getStatusCode());
+       self::assertSame('success', $data['status']);
+       self::assertSame('Andrea Natali', $data['data']['name']);
     }
 }

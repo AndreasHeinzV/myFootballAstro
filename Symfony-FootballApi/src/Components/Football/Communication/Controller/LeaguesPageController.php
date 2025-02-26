@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HomePageController extends AbstractController
+class LeaguesPageController extends AbstractController
 {
     public function __construct(private readonly FootballBusinessFacadeInterface $footballBusinessFacade)
     {

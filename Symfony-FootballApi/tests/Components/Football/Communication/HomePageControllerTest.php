@@ -33,12 +33,19 @@ class HomePageControllerTest extends WebTestCase
 
     public function testGetLeagues(): void
     {
-        $crawler = $this->client->request('GET', '/');
+        $crawler = $this->client->request('GET', '/leagues');
+
         self::assertResponseIsSuccessful();
-        $linkCrawler = $crawler->filterXPath('//a[contains(., "Bundesliga")]');
-        $this->assertGreaterThan(0, $linkCrawler->count(), 'The link containing "Bundesliga" should exist.');
-        $hrefCheck = $crawler->filter('a[href$="BL1"]');
-        $this->assertGreaterThan(0, $hrefCheck->count(), 'The href ending with "BL1" should exist.');
+        $response = $this->client->getResponse();
+        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $leaguesArray = $data["data"];
+        $bundesliga = $leaguesArray[6];
+        $this->assertSame($bundesliga['id'] ,2002);
+        $this->assertNotEmpty($data);
+
+        //$this->assertGreaterThan(0, $linkCrawler->count(), 'The link containing "Bundesliga" should exist.');
+       // $hrefCheck = $crawler->filter('a[href$="BL1"]');
+      //  $this->assertGreaterThan(0, $hrefCheck->count(), 'The href ending with "BL1" should exist.');
     }
 
 }
