@@ -13,7 +13,7 @@ use App\Tests\Fixtures\ApiRequest\ApiRequestFaker;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class LeagueTeamControllerTest extends WebTestCase
+class TeamDetailsControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
@@ -31,17 +31,22 @@ class LeagueTeamControllerTest extends WebTestCase
         $container->set(ApiRequesterInterface::class, $apiRequesterFaker);
     }
 
-    public function testGetLeagueTeam(): void
+    public function testTeamDetails(): void
     {
-        $this->client->request('GET', '/league/Campeonato%20Brasileiro%20S%C3%A9rie%20A/BSA');
-        $response = $this->client->getResponse();
-        $content = $response->getContent();
-        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        self::assertResponseIsSuccessful();
+        self::bootKernel();
+        $url = 'http://127.0.0.1:8000/team/SV%20Werder%20Bremen/12';
+        $this->client->request('GET', $url);
 
-        $teams = $data['data'];
-        self::assertGreaterThan(18, count($teams));
-        self::assertSame("success", $data["status"]);
-    //    self::assertStringContainsString('Mineiro', $data['data']['name']);
+        $response = $this->client->getResponse();
+        $responseContent = $response->getContent();
+        $data = json_decode($responseContent, true, 512, JSON_THROW_ON_ERROR);
+        $players = $data['players'];
+        self::assertResponseIsSuccessful($responseContent);
+
+        self::assertResponseHeaderSame('Content-Type', 'application/json');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('success', $data['status']);
+        self::assertSame(9438, $players[0]['playerId']);
     }
+
 }
