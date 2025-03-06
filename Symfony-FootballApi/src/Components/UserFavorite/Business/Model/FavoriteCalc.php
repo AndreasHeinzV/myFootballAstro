@@ -83,8 +83,6 @@ readonly class FavoriteCalc implements FavoriteCalcInterface
                     $this->userFavoriteEntityManager->updateUserFavoritePosition(
                         $userFavoriteEntity,
                         $positionEntityToChange,
-                        $favoritePosition,
-                        $positionToChange
                     );
                 }
             }
@@ -113,8 +111,6 @@ readonly class FavoriteCalc implements FavoriteCalcInterface
                     $this->userFavoriteEntityManager->updateUserFavoritePosition(
                         $userFavoriteEntity,
                         $positionEntityToChange,
-                        $favoritePosition,
-                        $positionToChange
                     );
                 }
             }

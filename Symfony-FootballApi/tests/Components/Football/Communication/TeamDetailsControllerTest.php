@@ -48,5 +48,4 @@ class TeamDetailsControllerTest extends WebTestCase
         self::assertSame('success', $data['status']);
         self::assertSame(9438, $players[0]['playerId']);
     }
-
 }
